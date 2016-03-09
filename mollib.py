@@ -323,7 +323,6 @@ class Molecule(dict):
         return None
 
     ### Read and Write Methods ###
-    # TODO: PDBs loaded from online are stored and loaded from tmp.
 
     def write_pdb(self, filename):
         "Write data to a PDB file."
