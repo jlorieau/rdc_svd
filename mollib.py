@@ -33,7 +33,8 @@ from itertools import chain as ichain
 from math import cos, sin, sqrt, pi
 import numpy as np
 
-import urllib2
+import urllib
+import os.path
 
 ### Utility Functions
 
@@ -277,7 +278,15 @@ class Molecule(dict):
     ### Mutator Functions ###
 
     def center(self):
-        "Centers a molecule about its center_of_mass."
+        """Centers a molecule about its center_of_mass.
+        
+        >>> mol = Molecule(pdb_code='2KXA')
+        >>> print "{:.3f} {:.3f} {:.3f}".format(*mol.center_of_mass)
+        16.970 0.070 0.122
+        >>> mol.center()
+        >>> print "{:.3f} {:.3f} {:.3f}".format(*mol.center_of_mass)
+        0.000 0.000 0.000
+        """
         com = self.center_of_mass
         for atom in self.atoms:
             atom.x -= com[0]
@@ -286,7 +295,6 @@ class Molecule(dict):
 
     def rotate_zyz(self, alpha, beta, gamma):
         "Rotates a molecule by the Euler z-y-z angles in degrees."
-
 
         # Trig.
         sin_a = sin(alpha*pi/180.)
@@ -315,6 +323,7 @@ class Molecule(dict):
         return None
 
     ### Read and Write Methods ###
+    # TODO: PDBs loaded from online are stored and loaded from tmp.
 
     def write_pdb(self, filename):
         "Write data to a PDB file."
@@ -367,10 +376,12 @@ class Molecule(dict):
 
     def fetch_pdb(self, pdb_code):
         """Downloads/fetches a pdb file online."""
-        
         url = 'http://ftp.rcsb.org/download/{}.pdb'.format(pdb_code)
-        request = urllib2.urlopen(url)
-        self.read_stream(request)
+        path = os.path.join('/tmp',pdb_code) + '.pdb'
+
+        if not os.path.isfile(path):
+            urllib.urlretrieve(url, path)
+        self.read_pdb(path)
         
     def read_stream(self, stream):
         "Reads in data from a string stream."
