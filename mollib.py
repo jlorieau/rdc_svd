@@ -13,7 +13,7 @@ read and write functions in the Molecule class, and more sophisticated behavior
 can be added to the Molecule, Chain, Residue and Atom classes by deriving them
 and changing the chain_class, residue_class and atom_class of Molecule.
 
->>> mol=Molecule('2OED.pdb')
+>>> mol=Molecule(pdb_code='2OED')
 >>> print mol
 Molecule:    1 chains, 56 residues, 862 atoms.
 >>> print mol['A'][1], mol['A'][1].atom_size,
@@ -25,7 +25,6 @@ Q2-CA 12.01
 >>> print "({:.3f}, {:.3f}, {:.3f})".format(*mol.center_of_mass)
 (0.133, -0.347, -0.002)
 >>> mol.rotate_zyz(0,90,0)
->>> mol.write_pdb('2OED_mollib.pdb')
 """
 
 import re
@@ -33,6 +32,8 @@ from itertools import imap, ifilter
 from itertools import chain as ichain
 from math import cos, sin, sqrt, pi
 import numpy as np
+
+import urllib2
 
 ### Utility Functions
 
@@ -184,8 +185,13 @@ class Molecule(dict):
     residue_class = Residue
     atom_class = Atom
 
-    def __init__(self, filename, *args, **kwargs):
-        self.read(filename)
+    def __init__(self, filename=None, pdb_code=None, *args, **kwargs):
+        if filename is not None:        
+            self.read_pdb(filename)
+        elif pdb_code is not None:
+            self.fetch_pdb(pdb_code)
+        else:
+            raise
         super(Molecule, self).__init__(*args, **kwargs)
 
     def __repr__(self):
@@ -198,12 +204,23 @@ class Molecule(dict):
 
     @property
     def chain_size(self):
+        """Returns the number of chains.
+
+        >>> mol=Molecule(pdb_code='1HTM') # Influenza hemagglutinin, 6 subunits
+        >>> print mol.chain_size
+        6
+        """
         return len(self)
 
     @property
     def residues(self):
         """Returns an iterator over all residues in this molecule,
-        sorted by residue number"""
+        sorted by residue number.
+        
+        >>> mol=Molecule(pdb_code='2KXA')
+        >>> print [r.number for r in mol.residues]
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
+        """
         return (r for r in sorted(ichain(*[r.values() for r in self.values()]),
                                   key=lambda r: r.number))
 
@@ -225,13 +242,27 @@ class Molecule(dict):
 
 
     ### Molecular Properties ###
+    #TODO: replace atoms with different isotopes
 
     @property
     def mass(self):
+        """ Returns the mass of the molecule.
+
+        >>> mol = Molecule(pdb_code='2KXA')
+        >>> print mol.mass
+        2445.07
+        """
         return sum(a.mass for a in self.atoms)
 
     @property
     def center_of_mass(self):
+        """ Returns the center-of-mass x,y,z vector of the molecule.
+
+        >>> mol = Molecule(pdb_code='2KXA')
+        >>> print "{:.3f} {:.3f} {:.3f}".format(*mol.center_of_mass)
+        16.970 0.070 0.122
+        """        
+        
         x,y,z=(0,0,0)
         m_total = 0.
         for atom in self.atoms:
@@ -328,8 +359,21 @@ class Molecule(dict):
                               'charge':atom.charge}
                 f.write(atom_line.format(**atom_parms))
 
-    def read(self, filename):
+    def read_pdb(self, filename):
         "Reads in data from a PDB file."
+        
+        with open(filename) as f:
+            self.read_stream(f)
+
+    def fetch_pdb(self, pdb_code):
+        """Downloads/fetches a pdb file online."""
+        
+        url = 'http://ftp.rcsb.org/download/{}.pdb'.format(pdb_code)
+        request = urllib2.urlopen(url)
+        self.read_stream(request)
+        
+    def read_stream(self, stream):
+        "Reads in data from a string stream."
 
         self.clear()
 
@@ -348,48 +392,48 @@ class Molecule(dict):
                                "(?P<element>[\s\w]{2})"
                                "(?P<charge>[\d\s\.\-]{2})?"))
 
-        with open(filename) as f:
-            # Find the ATOM lines and pull out the necessary data
-            atom_generator = ifilter(None, imap(pdb_line.match, f.readlines()))
+        # Find the ATOM lines and pull out the necessary data
+        atom_generator = ifilter(None, imap(pdb_line.match, 
+                                            stream.readlines()))
 
-            # Retrieve a set from the match objects
-            for match in atom_generator:
-                groupdict = {field_name:convert(field_value)
-                             for field_name, field_value
-                             in match.groupdict().items()}
+        # Retrieve a set from the match objects
+        for match in atom_generator:
+            groupdict = {field_name:convert(field_value)
+                         for field_name, field_value
+                         in match.groupdict().items()}
 
-                # create Chain, if it doesn't already exist
-                id = groupdict['chain']
-                if id not in self:
-                    chain = self.chain_class(id=id)
-                    chain.molecule = self
-                    self[id] = chain
+            # create Chain, if it doesn't already exist
+            id = groupdict['chain']
+            if id not in self:
+                chain = self.chain_class(id=id)
+                chain.molecule = self
+                self[id] = chain
 
-                chain = self[id]
+            chain = self[id]
 
-                # create Residue, if it doesn't already exist
-                number, name = (groupdict[i] for i in ('residue_number',
-                                'residue_name'))
-                if number not in chain:
-                    try:
-                        residue = self.residue_class(number=number, name=name)
-                        residue.chain = chain
-                        residue.molecule = self
-                        chain[number] = residue
-                    except:
-                        continue
-                residue = chain[number]
+            # create Residue, if it doesn't already exist
+            number, name = (groupdict[i] for i in ('residue_number',
+                            'residue_name'))
+            if number not in chain:
+                try:
+                    residue = self.residue_class(number=number, name=name)
+                    residue.chain = chain
+                    residue.molecule = self
+                    chain[number] = residue
+                except:
+                    continue
+            residue = chain[number]
 
-                # create the Atom. The following code overwrites atoms duplicate
-                # in atom name
-                name = groupdict['name']
-                atom_dict = {k:v for k,v in groupdict.items()
-                             if k in Atom.__slots__}
-                atom = self.atom_class(**atom_dict)
-                atom.residue = residue
-                atom.chain = chain
-                atom.molecule = self
-                residue[name] = atom
+            # create the Atom. The following code overwrites atoms duplicate
+            # in atom name
+            name = groupdict['name']
+            atom_dict = {k:v for k,v in groupdict.items()
+                         if k in Atom.__slots__}
+            atom = self.atom_class(**atom_dict)
+            atom.residue = residue
+            atom.chain = chain
+            atom.molecule = self
+            residue[name] = atom
 
 
 #### TESTS ####
@@ -402,5 +446,5 @@ class TestMolLib(unittest.TestCase):
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod()
-    unittest.main()
+    doctest.testmod(verbose=True)
+#    unittest.main()
