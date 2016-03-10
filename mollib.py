@@ -13,7 +13,7 @@ read and write functions in the Molecule class, and more sophisticated behavior
 can be added to the Molecule, Chain, Residue and Atom classes by deriving them
 and changing the chain_class, residue_class and atom_class of Molecule.
 
->>> mol=Molecule(pdb_code='2OED')
+>>> mol=Molecule('2OED')
 >>> print mol
 Molecule:    1 chains, 56 residues, 862 atoms.
 >>> print mol['A'][1], mol['A'][1].atom_size,
@@ -186,13 +186,14 @@ class Molecule(dict):
     residue_class = Residue
     atom_class = Atom
 
-    def __init__(self, filename=None, pdb_code=None, *args, **kwargs):
-        if filename is not None:        
-            self.read_pdb(filename)
-        elif pdb_code is not None:
-            self.fetch_pdb(pdb_code)
-        else:
-            raise
+    #TODO: Fix constructor to accept identifier that can either be a path or pdb_code
+
+    def __init__(self, identifier, *args, **kwargs):
+        """Constructor that accepts an identifier.
+
+        :identifier:  Either a filename, path, or pdb code.
+        """
+        self.read_identifier(identifier)
         super(Molecule, self).__init__(*args, **kwargs)
 
     def __repr__(self):
@@ -207,7 +208,7 @@ class Molecule(dict):
     def chain_size(self):
         """Returns the number of chains.
 
-        >>> mol=Molecule(pdb_code='1HTM') # Influenza hemagglutinin, 6 subunits
+        >>> mol=Molecule('1HTM') # Influenza hemagglutinin, 6 subunits
         >>> print mol.chain_size
         6
         """
@@ -218,7 +219,7 @@ class Molecule(dict):
         """Returns an iterator over all residues in this molecule,
         sorted by residue number.
         
-        >>> mol=Molecule(pdb_code='2KXA')
+        >>> mol=Molecule('2KXA')
         >>> print [r.number for r in mol.residues]
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
         """
@@ -249,7 +250,7 @@ class Molecule(dict):
     def mass(self):
         """ Returns the mass of the molecule.
 
-        >>> mol = Molecule(pdb_code='2KXA')
+        >>> mol = Molecule('2KXA')
         >>> print mol.mass
         2445.07
         """
@@ -259,7 +260,7 @@ class Molecule(dict):
     def center_of_mass(self):
         """ Returns the center-of-mass x,y,z vector of the molecule.
 
-        >>> mol = Molecule(pdb_code='2KXA')
+        >>> mol = Molecule('2KXA')
         >>> print "{:.3f} {:.3f} {:.3f}".format(*mol.center_of_mass)
         16.970 0.070 0.122
         """        
@@ -280,7 +281,7 @@ class Molecule(dict):
     def center(self):
         """Centers a molecule about its center_of_mass.
         
-        >>> mol = Molecule(pdb_code='2KXA')
+        >>> mol = Molecule('2KXA')
         >>> print "{:.3f} {:.3f} {:.3f}".format(*mol.center_of_mass)
         16.970 0.070 0.122
         >>> mol.center()
@@ -367,6 +368,17 @@ class Molecule(dict):
                               'charge':atom.charge}
                 f.write(atom_line.format(**atom_parms))
 
+    def read_identifier(self, identifier):
+        """Reads in structure based on identifier
+
+        :identifier:  Either a filename, path, or pdb code.
+        """
+        # Check to see if identifier is a filename or path
+        if os.path.isfile(identifier):
+            self.read_pdb(identifer)
+        else:
+            self.fetch_pdb(identifier)
+            
     def read_pdb(self, filename):
         "Reads in data from a PDB file."
         

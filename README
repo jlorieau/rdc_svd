@@ -4,7 +4,15 @@ author: Justin L Lorieau
 tags:
     - software
 ---
+
+# Overview
+
 MolLib is a simple Python module for manipulation biomolecular structures.
+
+- Github: <https://github.com/jlorieau/mollib>
+
+- Download: [mollib.py](https://raw.githubusercontent.com/
+jlorieau/mollib/master/mollib.py)
 
 ## Features
 
@@ -16,12 +24,14 @@ MolLib is a simple Python module for manipulation biomolecular structures.
 
 ## Releases
 
-## Documentation
+- v1.0: 20160309
 
-### Loading and Manipulating Molecules
+# Documentation
+
+## Example - Loading and Manipulating Molecules
 
 ~~~ python
->>> mol=Molecule('2OED.pdb')
+>>> mol=Molecule(pdb_code='2OED')
 >>> print mol
 Molecule:    1 chains, 56 residues, 862 atoms.
 >>> print mol['A'][1], mol['A'][1].atom_size,
@@ -36,7 +46,7 @@ Q2-CA 12.01
 >>> mol.write_pdb('2OED_mollib.pdb')
 ~~~
 
-### Methods (iterators)
+## Methods (iterators)
 
 Molecule.residues
 : Returns an iterator for all residues in the molecule
@@ -45,7 +55,7 @@ Molecule.atoms
 : Returns an iterator for all atoms in the molecule
 
 
-### Methods (accessor)
+## Methods (accessor)
 
 Molecule.chain_size
 : Returns the number of chains in the biomolecule
@@ -62,12 +72,7 @@ Molecule.mass
 Molecule.center_of_mass
 : Returns the center of mass vector of the biomolecule
 
-~~~ python
->>> print "({:.3f}, {:.3f}, {:.3f})".format(*mol.center_of_mass)
-(0.133, -0.347, -0.002)
-~~~
-
-### Methods (mutator)
+## Methods (mutator)
 
 Molecule.center()
 : Centers the molecule at the center of mass.
@@ -75,7 +80,7 @@ Molecule.center()
 Molecule.rotate_zyz(alpha, beta, gamma)
 : Rotates the molecule using Euler Z-Y-Z angles (degrees)
 
-### Methods (file)
+## Methods (file)
 
 Molecule.write_pdb(filename)
 : Write the molecule in PDB format to the specified filename/path
@@ -85,3 +90,8 @@ Molecule.read_pdb(filename)
 
 Molecule.fetch\_pdb(pdb\_code)
 : Fetches and caches (to /tmp) the PDB file for the specified pdb_code
+
+~~~ python
+>>> print "({:.3f}, {:.3f}, {:.3f})".format(*mol.center_of_mass)
+(0.133, -0.347, -0.002)
+~~~
