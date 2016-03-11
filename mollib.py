@@ -1,6 +1,5 @@
 """
 MolLib for Python
-=================
 
 Author: J Lorieau
 
@@ -14,21 +13,20 @@ can be added to the Molecule, Chain, Residue and Atom classes by deriving them
 and changing the chain_class, residue_class and atom_class of Molecule.
 
 >>> mol=Molecule('2OED')
->>> print mol
+>>> print(mol)
 Molecule:    1 chains, 56 residues, 862 atoms.
->>> print mol['A'][1], mol['A'][1].atom_size,
+>>> print("{} {:.0f}".format(mol['A'][1], mol['A'][1].atom_size))
 M1 19
->>> print mol['A'][2]['CA'], mol['A'][2]['CA'].mass
+>>> print("{} {:.2f}".format(mol['A'][2]['CA'], mol['A'][2]['CA'].mass))
 Q2-CA 12.01
->>> print mol.mass, 'Da'
+>>> print("%.2f Da" % mol.mass)
 6206.75 Da
->>> print "({:.3f}, {:.3f}, {:.3f})".format(*mol.center_of_mass)
+>>> print("({:.3f}, {:.3f}, {:.3f})".format(*mol.center_of_mass))
 (0.133, -0.347, -0.002)
 >>> mol.rotate_zyz(0,90,0)
 """
 
 import re
-from itertools import imap, ifilter
 from itertools import chain as ichain
 from math import cos, sin, sqrt, pi
 import numpy as np
@@ -186,8 +184,6 @@ class Molecule(dict):
     residue_class = Residue
     atom_class = Atom
 
-    #TODO: Fix constructor to accept identifier that can either be a path or pdb_code
-
     def __init__(self, identifier, *args, **kwargs):
         """Constructor that accepts an identifier.
 
@@ -209,7 +205,7 @@ class Molecule(dict):
         """Returns the number of chains.
 
         >>> mol=Molecule('1HTM') # Influenza hemagglutinin, 6 subunits
-        >>> print mol.chain_size
+        >>> print(mol.chain_size)
         6
         """
         return len(self)
@@ -220,7 +216,7 @@ class Molecule(dict):
         sorted by residue number.
         
         >>> mol=Molecule('2KXA')
-        >>> print [r.number for r in mol.residues]
+        >>> print([r.number for r in mol.residues])
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
         """
         return (r for r in sorted(ichain(*[r.values() for r in self.values()]),
@@ -251,7 +247,7 @@ class Molecule(dict):
         """ Returns the mass of the molecule.
 
         >>> mol = Molecule('2KXA')
-        >>> print mol.mass
+        >>> print("{:.2f}".format(mol.mass))
         2445.07
         """
         return sum(a.mass for a in self.atoms)
@@ -261,7 +257,7 @@ class Molecule(dict):
         """ Returns the center-of-mass x,y,z vector of the molecule.
 
         >>> mol = Molecule('2KXA')
-        >>> print "{:.3f} {:.3f} {:.3f}".format(*mol.center_of_mass)
+        >>> print("{:.3f} {:.3f} {:.3f}".format(*mol.center_of_mass))
         16.970 0.070 0.122
         """        
         
@@ -282,10 +278,10 @@ class Molecule(dict):
         """Centers a molecule about its center_of_mass.
         
         >>> mol = Molecule('2KXA')
-        >>> print "{:.3f} {:.3f} {:.3f}".format(*mol.center_of_mass)
+        >>> print("{:.3f} {:.3f} {:.3f}".format(*mol.center_of_mass))
         16.970 0.070 0.122
         >>> mol.center()
-        >>> print "{:.3f} {:.3f} {:.3f}".format(*mol.center_of_mass)
+        >>> print("{:.3f} {:.3f} {:.3f}".format(*mol.center_of_mass))
         0.000 0.000 0.000
         """
         com = self.center_of_mass
@@ -415,8 +411,8 @@ class Molecule(dict):
                                "(?P<charge>[\d\s\.\-]{2})?"))
 
         # Find the ATOM lines and pull out the necessary data
-        atom_generator = ifilter(None, imap(pdb_line.match, 
-                                            stream.readlines()))
+        atom_generator = filter(None, map(pdb_line.match, 
+                                          stream.readlines()))
 
         # Retrieve a set from the match objects
         for match in atom_generator:
