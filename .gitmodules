@@ -1,0 +1,3 @@
+[submodule "mollib"]
+	path = mollib
+	url = https://github.com/jlorieau/mollib.git
