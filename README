@@ -24,6 +24,8 @@ jlorieau/mollib/master/mollib.py)
 
 ## Releases
 
+- v2.0: 20160311
+    - Added Python 3 compatibility
 - v1.0: 20160309
 
 # Documentation
@@ -31,7 +33,7 @@ jlorieau/mollib/master/mollib.py)
 ## Example - Loading and Manipulating Molecules
 
 ~~~ python
->>> mol=Molecule(pdb_code='2OED')
+>>> mol=Molecule('2OED')
 >>> print mol
 Molecule:    1 chains, 56 residues, 862 atoms.
 >>> print mol['A'][1], mol['A'][1].atom_size,

@@ -178,6 +178,10 @@ class Chain(dict):
 class Molecule(dict):
     "A class for molecular structures."
 
+    # TODO: add init() method to delete all atoms/residues of molecules
+    # TODO: add translate method
+    # TODO: add reset method to bring molecule back to its original state (keep track of source pdb file)
+
     # The following class-level attributes are used to customize the base or
     # derived Chain, Residue and Atom classes used in the molecule
     chain_class = Chain
