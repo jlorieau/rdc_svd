@@ -375,7 +375,7 @@ class Molecule(dict):
         """
         # Check to see if identifier is a filename or path
         if os.path.isfile(identifier):
-            self.read_pdb(identifer)
+            self.read_pdb(identifier)
         else:
             self.fetch_pdb(identifier)
             
