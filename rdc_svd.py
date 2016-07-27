@@ -122,9 +122,10 @@ class Dipole(object):
 structures = []
 
 for pdb_file in params['-pdb']:
+
     structure = Molecule(pdb_file)
     structures.append(structure)
-
+    
 def get_dipoles(structure, resid_i, name_i, resid_j, name_j):
     """Returns a list of dipole objects that are in the given a structure, and 
     selected by the atom name_i and name_j name strings (i.e. 'HA') and residue
@@ -147,10 +148,10 @@ def get_dipoles(structure, resid_i, name_i, resid_j, name_j):
         atoms_j = [a for a in mol[resid_i].atoms if a.name.startswith(name_j)]
     else:
         atoms_j = [a for a in mol[resid_i].atoms if a.name == name_j]
-    
+
     return [Dipole(structure=structure, atom_i=atom_i, atom_j=atom_j)
             for atom_i in atoms_i for atom_j in atoms_j]
-    
+
 # Go through the dipolar rdcs and find the corresponding dipoles in the
 # structures
 for rdc in rdcs:
@@ -159,9 +160,9 @@ for rdc in rdcs:
         chain = structure.keys()[0]
         resid_i, name_i = rdc.resid_i, rdc.name_i
         resid_j, name_j = rdc.resid_j, rdc.name_j
-
-        rdc.conformers[structure.name] = get_dipoles(structure, 
-                                                     resid_i, name_i, 
+        
+        rdc.conformers[structure.name] = get_dipoles(structure,
+                                                     resid_i, name_i,
                                                      resid_j, name_j)
 
 # Construct the dipole vector and structure matrix A.

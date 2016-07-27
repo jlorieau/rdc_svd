@@ -1,0 +1,52 @@
+DATA SEQUENCE GLFGAIAAFI ENGWEGMID
+
+VARS   RESID_I RESNAME_I ATOMNAME_I RESID_J RESNAME_J ATOMNAME_J D DD W FC
+FORMAT %5d %6s %6s %5d %6s %6s %9.3f %9.3f %.2f %8.4f
+
+# D/W set according the (1/err)
+
+
+    3    PHE      N     3    PHE       H            4.7      1.0 1.0 1.00
+    4	 GLY	  N	    4    GLY       H            3.3      1.0 1.0 1.00
+    5	 ALA	  N	    5    ALA       H           -7.3      1.0 1.0 1.00
+    6	 ILE	  N	    6    ILE       H           -2.1      1.0 1.0 1.00
+    7	 ALA	  N	    7    ALA       H            4.6      1.0 1.0 1.00
+#    8	 ALA	  N	    8    ALA       H 	       -1.6      1.0 1.0 1.00
+    9	 PHE	  N	    9    PHE       H 	       -7.2      1.0 1.0 1.00
+    10	 ILE	  N    10    ILE       H 	        3.0      1.0 1.0 1.00
+    11	 GLU	  N    11    GLU       H 	        4.4      1.0 1.0 1.00
+    12   GLY      N    12    GLY       H           -4.1      1.0 1.0 1.00
+    13   GLY      N    13    GLY       H           -4.2      1.0 1.0 1.00
+    14	 TRP	  N    14    TRP       H            7.3      1.0 1.0 1.00
+    15	 THR	  N    15    THR       H            4.4      1.0 1.0 1.00
+    16	 GLY	  N    16    GLY       H            3.0      1.0 1.0 1.00
+    17	 MET	  N    17    MET       H            6.5      1.0 1.0 1.00
+    18	 ILE	  N    18    ILE       H 	        5.5      1.0 1.0 1.00
+    19	 ASP	  N    19    ASP       H 	        4.2      1.0 1.0 1.00
+    20	 GLY	  N    20    GLY       H 	        4.1      1.0 1.0 1.00
+    21	 TRP	  N    21    TRP       H 	        5.7      1.0 1.0 1.00
+    22	 TYR	  N    22    TYR       H 	        3.2      1.0 1.0 1.00
+    23	 GLY	  N    23    GLY       H 	        1.2      1.0 1.0 1.00
+
+
+    2    LEU     CA     2    LEU      HA           -4.7      1.0  0.5  1.0
+    3    PHE     CA     3    PHE      HA           31.3      1.0  0.5  1.0
+    4	 GLY	 CA	    4    GLY      HA#          17.3      1.0  0.5  1.0
+    5	 ALA	 CA	    5    ALA      HA          -17.3      1.0  0.5  1.0
+    6	 ILE	 CA	    6    ILE      HA            5.4      1.0  0.5  1.0
+    7	 ALA	 CA	    7    ALA      HA	       21.2      1.0  0.5  1.0
+#    8	 ALA     CA	    8    ALA      HA          -16.2      1.0  0.5  1.0
+    9	 PHE	 CA	    9    PHE      HA	      -14.1      1.0  0.5  1.0
+    10	 ILE	 CA    10    ILE      HA	       24.3      1.0  0.5  1.0
+    11	 GLU	 CA    11    GLU      HA	        6.0      1.0  0.5  1.0
+    12   GLY     CA    12    GLY      HA#          -4.4      1.0  0.5  1.0
+    13   GLY     CA    13    GLY      HA#         -10.9      1.0  0.5  1.0
+    14   TRP     CA    14    TRP      HA           -0.3      1.0  0.5  1.0
+    15   THR     CA    15    THR      HA           -2.9      1.0  0.5  1.0
+    16   GLY     CA    16    GLY      HA#         -11.1      1.0  0.5  1.0
+    17   MET     CA    17    MET      HA            6.9      1.0  0.5  1.0
+    18   ILE     CA    18    ILE      HA           -2.9      1.0  0.5  1.0
+    19   ASP     CA    19    ASP      HA           -1.5      1.0  0.5  1.0
+    20   GLY     CA    20    GLY      HA#          -4.3      1.0  0.5  1.0
+    21   TRP     CA    21    TRP      HA            3.2      1.0  0.5  1.0
+    22   TYR     CA    22    TYR      HA           -1.1      1.0  0.5  1.0
