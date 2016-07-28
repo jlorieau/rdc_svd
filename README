@@ -1,5 +1,5 @@
 ---
-title: MolLib for Python
+title: Residual Dipolar Coupling SVD Fit Software for Python
 author: Justin L Lorieau
 tags:
     - software
@@ -7,93 +7,60 @@ tags:
 
 # Overview
 
-MolLib is a simple Python module for manipulation biomolecular structures.
+The rdc_svd software fits residual dipolar couplings (RDCs) to a structure from
+the protein databank (PDB) using singular value decomposition (SVD).
 
-- Github: <https://github.com/jlorieau/mollib>
-
-- Download: [mollib.py](https://raw.githubusercontent.com/
-jlorieau/mollib/master/mollib.py)
+- Github: <https://github.com/jlorieau/rdc_svd>
 
 ## Features
 
-- Common manipulations of biomolecules for biophysics, like translation, Euler
-  rotations
-- *Easily extendable* data types (Atom, Residue, Chain, Molecule) through object
-  inheritance to add functionality and data to base objects.
-- Loading, fetching and writing PDB files
+- Conducts an SVD fit using the same input format as DC in NMRPipe.
+- Capable of dealing with sum couplings, like in methylenes, using
+  the '#' atom name. (ex: 'HA#' to fit both HA1 and HA2 of glycines.)
+- Capable of fitting multiple conformers from multiple PDB files
+  together.
+- Detailed output of the Saupe tensor and fitting statistics.
 
 ## Releases
 
-- v2.0: 20160311
-    - Added Python 3 compatibility
-- v1.0: 20160309
+- v1.1: 20160728.
+  [v1.1.tar.gz](https://github.com/jlorieau/rdc_svd/archive/v1.1.tar.gz)
+  [v1.1.zip](https://github.com/jlorieau/rdc_svd/archive/v1.1.zip)
+- v1.0: 20160727
 
 # Documentation
 
-## Example - Loading and Manipulating Molecules
+## Sample usage for a 3-conformer RDC dataset
 
-~~~ python
->>> mol=Molecule('2OED')
->>> print mol
-Molecule:    1 chains, 56 residues, 862 atoms.
->>> print mol['A'][1], mol['A'][1].atom_size,
-M1 19
->>> print mol['A'][2]['CA'], mol['A'][2]['CA'].mass
-Q2-CA 12.01
->>> print mol.mass, 'Da'
-6206.75 Da
->>> print "({:.3f}, {:.3f}, {:.3f})".format(*mol.center_of_mass)
-(0.133, -0.347, -0.002)
->>> mol.rotate_zyz(0,90,0)
->>> mol.write_pdb('2OED_mollib.pdb')
 ~~~
+$ ./rdc_svd.py -pdb test/*.pdb -dc test/hafp23_g8a.inp
 
-## Methods (iterators)
+Saupe(1): [ 1.24046551  0.30456653 -0.12318243  0.81267299  0.40941609]
+Saupe(2): [ -7.93815366   6.16633859   6.11673696  -4.13554146 -10.0421545 ]
+Saupe(3): [  5.84082969  10.23609654  -9.57914833  13.20301772   9.35618703]
+S_xyz(1): [ 1.6127692  -0.54233787 -1.07043132]
+S_xyz(2): [ 14.63281043  -0.13731538 -14.49549505]
+S_xyz(3): [-22.06437559  17.37816129   4.6862143 ]
+Da(1): 0.806Hz, Dr(1): 0.176, Rh(1): 0.218
+Da(2): 7.316Hz, Dr(2): 4.786, Rh(2): 0.654
+Da(3): -11.032Hz, Dr(3): 4.231, Rh(3): 0.383
+Q-factor: 3.5%
+RMS (Hz): 0.450861536825
 
-Molecule.residues
-: Returns an iterator for all residues in the molecule
 
-Molecule.atoms
-: Returns an iterator for all atoms in the molecule
+================================================================================================
+conformer:              atom(i) / atom(j)      D_obs (Hz)  D_pred (Hz)   Delta (Hz)        Scale
+================================================================================================
+test/2lwa_struc-a...       F3-N / F3-H              4.700        5.059       -0.359        1.000
+test/2lwa_struc-b...       F3-N / F3-H
+test/2lwa_struc-c...       F3-N / F3-H
 
+...
 
-## Methods (accessor)
-
-Molecule.chain_size
-: Returns the number of chains in the biomolecule
-
-Molecule.residue_size
-: Returns the number of residues in the biomolecule
-
-Molecule.atom_size
-: Return the number of atoms in the biomolecule
-
-Molecule.mass
-: Return the mass (in Da) of the biomolecule
-
-Molecule.center_of_mass
-: Returns the center of mass vector of the biomolecule
-
-## Methods (mutator)
-
-Molecule.center()
-: Centers the molecule at the center of mass.
-
-Molecule.rotate_zyz(alpha, beta, gamma)
-: Rotates the molecule using Euler Z-Y-Z angles (degrees)
-
-## Methods (file)
-
-Molecule.write_pdb(filename)
-: Write the molecule in PDB format to the specified filename/path
-
-Molecule.read_pdb(filename)
-: Reads the PDB filename/path into the current molecule
-
-Molecule.fetch\_pdb(pdb\_code)
-: Fetches and caches (to /tmp) the PDB file for the specified pdb_code
-
-~~~ python
->>> print "({:.3f}, {:.3f}, {:.3f})".format(*mol.center_of_mass)
-(0.133, -0.347, -0.002)
+test/2lwa_struc-a...     W21-CA / W21-HA            3.200        2.441        0.759        0.485
+test/2lwa_struc-b...     W21-CA / W21-HA
+test/2lwa_struc-c...     W21-CA / W21-HA
+test/2lwa_struc-a...     Y22-CA / Y22-HA           -1.100       -2.686        1.586        0.485
+test/2lwa_struc-b...     Y22-CA / Y22-HA
+test/2lwa_struc-c...     Y22-CA / Y22-HA
 ~~~
