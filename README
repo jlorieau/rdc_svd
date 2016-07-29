@@ -19,6 +19,7 @@ the protein databank (PDB) using singular value decomposition (SVD).
   the '#' atom name. (ex: 'HA#' to fit both HA1 and HA2 of glycines.)
 - Capable of fitting multiple conformers from multiple PDB files
   together.
+- Custom weightings of RDC values in SVD fit.
 - Detailed output of the Saupe tensor and fitting statistics.
 
 ## Releases
